@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "outDir": "backend/dist",
-    "rootDir": "backend/src",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "module": "commonjs",
     "target": "es6",
     "strict": true
