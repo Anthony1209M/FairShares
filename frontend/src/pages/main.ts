@@ -11,27 +11,34 @@ import '../styles/style.css'
 
 // setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
 
+const emailInput = document.querySelector<HTMLInputElement>('#email-input')!;
+const passInput = document.querySelector<HTMLInputElement>('#input-pass')!;
+const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+const logInBtn = document.querySelector<HTMLButtonElement>("#login-btn");
+
+
 function togglePasswordVisibility(e: MouseEvent)
 {
-    const inputPass = document.querySelector<HTMLInputElement>('.input-pass');
-
-    if(inputPass?.type === "password")
+    if(passInput?.type === "password")
     {
-        inputPass.type = "text";
+        passInput.type = "text";
+        togglePasswordBtn?.setAttribute("name", "eye-outline")
     }
-    else if(inputPass?.type === "text")
+    else if(passInput?.type === "text")
     {
-        inputPass.type = "password";
+        passInput.type = "password";
+        togglePasswordBtn?.setAttribute("name", "eye-off-outline")
+        
+        
     }
     
 }
 
 function toggleIconVisibility(e: Event)
 {
-    const togglePasswordBtn = document.getElementById("togglePasswordBtn");
-    const input = document.querySelector<HTMLInputElement>('.input-pass')!;
+    
 
-    if(input.value.length > 0)
+    if(passInput.value.length > 0)
     {
         togglePasswordBtn?.classList.remove("hidden")
     }
@@ -44,13 +51,43 @@ function toggleIconVisibility(e: Event)
 
 }
 
+function checkInputs(e:Event)
+{
+    if(emailInput.value.length > 0 && passInput.value.length >= 6)
+    {
+        if(logInBtn)
+        {
+            logInBtn.disabled = false;
+        }
+        
 
-const togglePasswordBtn = document.getElementById("togglePasswordBtn");
-const inputPass = document.querySelector('.input-pass');
+    }
+    else
+    {
+         if(logInBtn)
+        {
+            logInBtn.disabled = true;
+        }
+    }
+
+}
+
+if(logInBtn)
+{
+   logInBtn.disabled = true;
+}
+
 
 togglePasswordBtn?.addEventListener("click", togglePasswordVisibility);
 
-inputPass?.addEventListener("input", toggleIconVisibility);
+passInput?.addEventListener("input", toggleIconVisibility);
+
+passInput?.addEventListener("input", checkInputs);
+emailInput?.addEventListener("input", checkInputs)
+
+
+
+
 
 
 

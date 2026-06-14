@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 body
 {
     background-color: #F4F5F7;
@@ -11,7 +12,7 @@ body
 .input
 {
     @apply px-4 py-3 border
-          focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none
-            border-gray-400 rounded-4xl text-sm 
+          focus:ring-2 focus:ring-green-500  focus:outline-none
+            border-gray-400 rounded-4xl text-sm hover:border-gray-600
 
 }
