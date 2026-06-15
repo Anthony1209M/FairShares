@@ -6,6 +6,8 @@
 
     "express": "^4.22.2",
 
+    "mongodb": "^7.3.0",
+
     "mongoose": "^9.7.0"
 
   },
@@ -20,7 +22,7 @@
 
   "scripts": {
 
-    "start-dev": "nodemon --exec ts-node backend/src/app.ts",
+    "start-dev": "nodemon --exec ts-node src/server.ts",
 
     "build": "tsc",
 
