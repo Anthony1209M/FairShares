@@ -1,9 +1,8 @@
 import express, { Request, Response } from "express";
-import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
+import {errorMiddleware} from "./middleware/errorMiddleware";
 
 
-dotenv.config();
 
 const app = express();
 
@@ -12,11 +11,8 @@ app.use(express.json());
 
 app.use('/api', authRoutes);
 
-const PORT = Number(process.env.PORT) || 3000;
+app.use(errorMiddleware);
 
-app.listen(PORT, () =>
-{
-  console.log("Sever running...");
-}
 
-)
+
+export default app;
