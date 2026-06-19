@@ -21,8 +21,7 @@ const expenseSchema = new Schema({
         amount:
         {
             type:Number,
-            default: 0,
-            min: [0, "Amount can't be less than 0"]
+            min: [1, "Amount cannot be less than 1"]
      
         }
      }
@@ -64,7 +63,8 @@ const expenseSchema = new Schema({
     },
     createdAt:
     {
-        type: String
+        type: Date,
+        default: Date.now()
     }
 
     

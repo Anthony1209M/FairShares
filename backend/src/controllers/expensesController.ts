@@ -2,35 +2,24 @@ import expenseModel from "../models/expenseModel";
 import User from "../models/userModel";
 import {CreateExpenseBody} from "../types/expenseType";
 import { Request, Response } from "express";
+import {expenseSchema} from "../schemas/expenseSchema"
+import { asyncHandler } from "../utils/asyncHandler";
 
 
-const createExpense= async(req:Request<{}, {}, CreateExpenseBody>, res:Response) =>
+const createExpense= asyncHandler(async(req:Request, res:Response) =>
 {
-    try
-    {
-        const {participants, splits, total, description} = req.body;
+   
+        const result = expenseSchema.safeParse(req.body);
+        
 
         //Remember to add verification logged user must be inside participants.
 
-        if(!description)
+        if(!result.success)
         {
             return res.status(400).json({
-            message: "Description cannot be empty"});
-        }
-
-        if (!participants || participants.length < 2) {
-        return res.status(400).json({
-            message: "At least 2 participants are required"
-        });
-        }
-
-
-        const sum = splits.reduce((acc, s) => acc + s.amount, 0);
-
-        if(sum !== total)
-        {
-            return res.status(400).json({
-            message: "The amount has to be the same as the total"});
+            message: "Validation error",
+            errors: result.error.format()
+            });
         }
 
 
@@ -41,13 +30,7 @@ const createExpense= async(req:Request<{}, {}, CreateExpenseBody>, res:Response)
 
 
 
-    }
+    
 
-    catch(err)
-    {
-         return res.status(500).json({
-            message: err
-        })
 
-    }
-}
+});

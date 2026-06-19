@@ -1,17 +1,18 @@
 import { Model } from "mongoose";
 import User from "../models/userModel";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
+import {asyncHandler} from "../utils/asyncHandler"
+import { HttpError } from "../errors/HttpErrors";
 
 
-export const createSignupUser = async(req:Request, res:Response) =>
+export const createSignupUser = asyncHandler(async(req:Request, res:Response, next: NextFunction) =>
 {
-    try
-    {
+    
         const {email, password, confirmPassword} = req.body;
 
         const user = await User.findOne({email});
 
-        if(password !== confirmPassword) return res.status(400).json({Message: "Passwords do not match"});
+        if(password !== confirmPassword) throw new HttpError(409, "User already exists");
         
 
         if(!user)
@@ -25,7 +26,7 @@ export const createSignupUser = async(req:Request, res:Response) =>
                 
             });
 
-            return res.status(200).json({Message: "User was created"})
+            return res.status(201).json({Message: "User was created"})
         }
 
         const isPendingUser = user && !user.isRegistered
@@ -38,22 +39,15 @@ export const createSignupUser = async(req:Request, res:Response) =>
            
         }
 
-        return res.status(409).json({Message: "User already exists"})
+        throw new HttpError(409, "User already exists");
 
-    }
-    catch(err)
-    {
-        return res.status(500).json({
-            message: err
-        })
+    
+    
+});
 
-    }
-};
-
-const createInvitedUser = async(req:Request, res:Response) =>
+const createInvitedUser = asyncHandler(async(req:Request, res:Response, next: NextFunction) =>
 {
-    try
-    {
+    
         const {email} = req.body;
 
         const user = await User.findOne({email});
@@ -68,17 +62,11 @@ const createInvitedUser = async(req:Request, res:Response) =>
 
         }
 
-    }
-    catch(err)
-    {
-        return res.status(500).json({
-        message: "Server Error"
-        })
-
-    }
     
     
-};
+    
+    
+});
 
 const activateUser = async(user: any, password: string) =>
 {
@@ -91,5 +79,7 @@ const activateUser = async(user: any, password: string) =>
 
     
 };
+
+
 
 
