@@ -5,14 +5,13 @@ const expenseSchema = new Schema({
     
     total:{
         type:Number,
-        require:[true, "total is required"],
+        required:[true, "total is required"],
         min:[0, "Total can't be less than 0"]
     },
 
-    paidBy: 
-    {
-        type:[
-        {
+    splits: 
+    [
+     {
         user:
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -26,11 +25,11 @@ const expenseSchema = new Schema({
             min: [0, "Amount can't be less than 0"]
      
         }
-        }
-        ]
+     }
+    ]
         
         
-    },
+    ,
     category: {
             type: String,
             enum: [
@@ -46,14 +45,32 @@ const expenseSchema = new Schema({
                 ],
                 default: 'other'
          },
-    Description: String,
+    description: 
+    {
+        type: String,
+        required: [true, "There has to be a description"]
+    },
     participants:
     [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         }
-    ]
+    ],
+    createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+    },
+    createdAt:
+    {
+        type: String
+    }
 
     
-})
+});
+
+
+const Expense = mongoose.model('Expense', expenseSchema);
+
+export default Expense;
