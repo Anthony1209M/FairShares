@@ -1,10 +1,11 @@
 import { Router } from "express";
+import {createSignupUser} from "../controllers/authController"
 
 const router = Router();
 
-router.get("/login", (req, res) => 
-{
-    res.status(200).json({message:"hola"})
-});
+router.post("/login");
+
+router.post("/signup", createSignupUser);
+
 
 export default router;
