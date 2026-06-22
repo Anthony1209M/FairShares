@@ -1,11 +1,14 @@
+import {app} from "./app";
+import {showSignUp} from "./signUp";
+import {login, type loginDTO} from "../api/auth";
+import { navigateTo } from "../router";
+
 export const showLogin = () =>
 {
-const app = document.querySelector<HTMLDivElement>('#app')!
 app.classList.add("min-h-screen", "flex", "flex-col", "items-center");
 app.innerHTML =
-
 `
-<div class="flex flex-col w-full gap-5 m-auto max-w-sm bg-white py-10 px-10 rounded-lg shadow-lg" >
+<div class="card" >
           <form action="submit" class="flex flex-col gap-4">
 
             <h1 class="self-center text-3xl font-medium mb-4">Login</h1>
@@ -23,26 +26,27 @@ app.innerHTML =
 
             </div>
             
-            <button id="login-btn" class=" bg-green-500 disabled:opacity-50 active:opacity-70 disabled:cursor-not-allowed  hover:bg-green-600 cursor-pointer rounded-4xl px-4 py-3 text-sm mt-2">Log in</button>
+            <button id="login-btn" class="primaryBtn">Log in</button>
             
           
           </form>
 
           <button class="px-4 py-3 text-center text-sm rounded-4xl cursor active:opacity-70 hover:bg-gray-100">Forgot the password?</button>
 
-          <button id="go-dashboard" class=" hover:bg-gray-100 px-4 py-3 border text-center active:opacity-70 border-green-500 text-sm rounded-4xl">Create new account</button>
+          <button id="signUpBtn" class=" hover:bg-gray-100 px-4 py-3 border text-center active:opacity-70 border-green-500 text-sm rounded-4xl">Create new account</button>
 
           
        </div>
        
 `
-};
+
 
 
 const emailInput = document.querySelector<HTMLInputElement>('#email-input')!;
 const passInput = document.querySelector<HTMLInputElement>('#input-pass')!;
 const togglePasswordBtn = document.getElementById("togglePasswordBtn");
 const logInBtn = document.querySelector<HTMLButtonElement>("#login-btn");
+const signUpBtn = document.querySelector("#signUpBtn");
 
 
 function togglePasswordVisibility(e: MouseEvent)
@@ -81,6 +85,7 @@ function toggleIconVisibility(e: Event)
 
 function checkInputs(e:Event)
 {
+    
     if(emailInput.value.length > 0 && passInput.value.length >= 6)
     {
         if(logInBtn)
@@ -100,11 +105,41 @@ function checkInputs(e:Event)
 
 }
 
+async function signIn(e:Event)
+{
+    e.preventDefault();
+
+    const user: loginDTO = 
+    {
+        email: emailInput.value,
+        password: passInput.value
+    }
+    
+    try
+    {
+        await login(user);
+        navigateTo("/dashboard");
+
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+    
+    
+
+}
+
+
+
 if(logInBtn)
 {
    logInBtn.disabled = true;
 }
 
+logInBtn?.addEventListener("click", signIn);
+
+signUpBtn?.addEventListener('click', showSignUp);
 
 togglePasswordBtn?.addEventListener("click", togglePasswordVisibility);
 
@@ -112,3 +147,6 @@ passInput?.addEventListener("input", toggleIconVisibility);
 
 passInput?.addEventListener("input", checkInputs);
 emailInput?.addEventListener("input", checkInputs);
+
+};
+

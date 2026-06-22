@@ -9,10 +9,36 @@ body
     
 }
 
+.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  
+}
+
+.expense-modal {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  
+}
+
 .input
 {
     @apply px-4 py-3 border
           focus:ring-2 focus:ring-green-500  focus:outline-none
             border-gray-400 rounded-4xl text-sm hover:border-gray-600
 
+}
+
+.card
+{
+    @apply flex flex-col w-full gap-5 m-auto max-w-sm bg-white p-10 rounded-lg shadow-lg
+}
+
+.primaryBtn 
+{
+  @apply bg-green-500 disabled:opacity-50 active:opacity-70
+   disabled:cursor-not-allowed  hover:bg-green-600 cursor-pointer
+    rounded-4xl px-4 py-3 text-sm mt-2
 }
