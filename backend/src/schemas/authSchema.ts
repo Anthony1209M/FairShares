@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { email, z } from "zod";
 
 export const signUpUserSchema = z.object({
   email: z.string().email(),
@@ -12,3 +12,13 @@ export const createInvitedUserSchema = z.object({
   email: z.string().email(),
   name: z.string().min(5)
 });
+
+
+export const signInSchema = 
+  signUpUserSchema.pick(
+    {
+    email: true,
+    password: true
+    }
+  )
+
