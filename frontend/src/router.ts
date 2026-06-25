@@ -1,16 +1,27 @@
 import { showLogin } from "./pages/login";
 import { app } from "./pages/app";
 import { showDashboard } from "./pages/dashboard";
+import {getCurrentUser} from "./api/auth"; 
 
-export function navigateTo(path: string)
+export async function navigateTo(path: string)
 {
     history.pushState({}, "", path);
-    renderPage(path);
+    await renderPage(path);
 };
 
 
-export function renderPage(path: string)
+export async function renderPage(path: string)
 {
+    const user = await getCurrentUser();
+
+    if ((path === "/login" || path === "/") && user) {
+        return showDashboard(); // already logged in
+    }
+
+    if (path === "/dashboard" && !user) {
+        return showLogin(); // not logged in
+    }
+
     if(path === "/login" || path === "/")
     {
         showLogin();
