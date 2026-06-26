@@ -4,7 +4,7 @@ import {navigateTo} from "./router";
 import { renderPage } from "./router";
 
 
-renderPage(location.pathname);
+navigateTo(location.pathname);
 
 
 

@@ -5,13 +5,19 @@ export async function apiFetch<T>(path:string, options?: RequestInit ): Promise<
 {
     const res = await fetch(`${BASEURL}${path}`,
     {headers: { "Content-Type": "application/json" },
+    credentials: "include",
     ...options,});
 
+    
+    
     if(!res.ok)
     {
-        throw new Error(`API Error ${res.status}`)
+        const data = await res.json();
+        throw new Error(data.message);
     }
+    
 
-    return res.json();
+
+    return await res.json();
 
 }

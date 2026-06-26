@@ -1,12 +1,12 @@
 import expenseModel from "../models/expenseModel";
 import User from "../models/userModel";
-import {CreateExpenseBody} from "../types/expenseType";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {expenseSchema} from "../schemas/expenseSchema"
 import { asyncHandler } from "../utils/asyncHandler";
+import { HttpError } from "../errors/HttpErrors";
 
 
-const createExpense= asyncHandler(async(req:Request, res:Response) =>
+const createExpense= asyncHandler(async(req:Request, res:Response, next) =>
 {
    
         const result = expenseSchema.safeParse(req.body);
@@ -22,15 +22,13 @@ const createExpense= asyncHandler(async(req:Request, res:Response) =>
             });
         }
 
+        const {splits, total} = result.data;
 
+        const sum = splits.reduce((acc, s) => acc + s.amount, 0);
 
-        
-
-
-
-
-
-    
-
+        if(sum !== total)
+        {
+            throw new HttpError(400, "Splits must equal total")
+        }
 
 });

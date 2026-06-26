@@ -2,16 +2,18 @@ import {app} from "./app";
 import {showSignUp} from "./signUp";
 import {login, type loginDTO} from "../api/auth";
 import { navigateTo } from "../router";
+import { setShake } from "../utils/errorMessages";
+import {togglePasswordVisibility, toggleIconVisibility} from "../utils/password";
 
 export const showLogin = () =>
 {
 app.classList.add("min-h-screen", "flex", "flex-col", "items-center");
 app.innerHTML =
 `
-<div class="card" >
+<div id="login-card" class="card" >
           <form action="submit" class="flex flex-col gap-4">
 
-            <h1 class="self-center text-3xl font-medium mb-4">Login</h1>
+            <h1 class="self-center text-3xl font-medium mb-4">Login</h1>        
 
             <div>
               <input type="email" id="email-input" placeholder="Enter your email" class="input w-full">
@@ -31,9 +33,11 @@ app.innerHTML =
           
           </form>
 
-          <button class="px-4 py-3 text-center text-sm rounded-4xl cursor active:opacity-70 hover:bg-gray-100">Forgot the password?</button>
+          <button class="px-4 py-3 text-center text-sm cursor-pointer rounded-4xl cursor active:opacity-70 
+          hover:bg-gray-100">Forgot the password?</button>
 
-          <button id="signUpBtn" class=" hover:bg-gray-100 px-4 py-3 border text-center active:opacity-70 border-green-500 text-sm rounded-4xl">Create new account</button>
+          <button id="signUpBtn" class=" hover:bg-gray-100 px-4 py-3 border
+           text-center active:opacity-70 border-green-500 text-sm rounded-4xl cursor-pointer">Create new account</button>
 
           
        </div>
@@ -44,46 +48,38 @@ app.innerHTML =
 
 const emailInput = document.querySelector<HTMLInputElement>('#email-input')!;
 const passInput = document.querySelector<HTMLInputElement>('#input-pass')!;
-const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+const iconPassBtn = document.getElementById("togglePasswordBtn")!;
 const logInBtn = document.querySelector<HTMLButtonElement>("#login-btn");
 const signUpBtn = document.querySelector("#signUpBtn");
 
 
-function togglePasswordVisibility(e: MouseEvent)
+async function signIn(e:Event)
 {
-    if(passInput?.type === "password")
+    e.preventDefault();
+
+    const user: loginDTO = 
     {
-        passInput.type = "text";
-        togglePasswordBtn?.setAttribute("name", "eye-outline")
+        email: emailInput.value,
+        password: passInput.value
     }
-    else if(passInput?.type === "text")
+    
+    try
     {
-        passInput.type = "password";
-        togglePasswordBtn?.setAttribute("name", "eye-off-outline")
+        await login(user);
+        navigateTo("/dashboard");
+
+    }
+    catch(err)
+    {  
+            setShake(); 
         
-        
     }
     
-}
-
-function toggleIconVisibility(e: Event)
-{
     
-
-    if(passInput.value.length > 0)
-    {
-        togglePasswordBtn?.classList.remove("hidden")
-    }
-    else
-    {
-        togglePasswordBtn?.classList.add("hidden")
-    }
-    
-
 
 }
 
-function checkInputs(e:Event)
+function checkInputs()
 {
     
     if(emailInput.value.length > 0 && passInput.value.length >= 6)
@@ -105,31 +101,6 @@ function checkInputs(e:Event)
 
 }
 
-async function signIn(e:Event)
-{
-    e.preventDefault();
-
-    const user: loginDTO = 
-    {
-        email: emailInput.value,
-        password: passInput.value
-    }
-    
-    try
-    {
-        await login(user);
-        navigateTo("/dashboard");
-
-    }
-    catch(err)
-    {
-        console.log(err);
-    }
-    
-    
-
-}
-
 
 
 if(logInBtn)
@@ -139,11 +110,21 @@ if(logInBtn)
 
 logInBtn?.addEventListener("click", signIn);
 
-signUpBtn?.addEventListener('click', showSignUp);
+signUpBtn?.addEventListener('click', () => 
+{
+        navigateTo("/signup");
 
-togglePasswordBtn?.addEventListener("click", togglePasswordVisibility);
+});
 
-passInput?.addEventListener("input", toggleIconVisibility);
+iconPassBtn?.addEventListener("click", () => 
+{togglePasswordVisibility(passInput, iconPassBtn);
+
+});
+
+passInput?.addEventListener("input", () => 
+{
+    toggleIconVisibility(passInput, iconPassBtn);
+});
 
 passInput?.addEventListener("input", checkInputs);
 emailInput?.addEventListener("input", checkInputs);

@@ -8,7 +8,6 @@ export interface loginDTO
 
 interface AuthResponse 
 {
-  token: string;
   user: { id: string; name: string; email: string };
 }
 
@@ -22,4 +21,20 @@ export function login(loginDTO: loginDTO) : Promise<AuthResponse>
 
         }
     )
+}
+
+export async function getCurrentUser() : Promise<AuthResponse | null >
+{
+    try
+    {
+        const user = await apiFetch<AuthResponse>("/getme");
+        
+        return user;
+
+    }
+    catch(err)
+    {
+        return null;
+    }
+   
 }

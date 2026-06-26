@@ -2,6 +2,7 @@ import {app} from "./app";
 
 export const showDashboard = () =>
 {
+    app.classList.remove(...app.classList);
     app.innerHTML =
     `
             <header>
