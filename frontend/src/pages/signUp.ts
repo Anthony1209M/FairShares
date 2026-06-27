@@ -1,5 +1,6 @@
 import {app} from "./app";
 import {togglePasswordVisibility, toggleIconVisibility} from "../utils/password";
+import { navigateTo } from "../router";
 
 
 export const showSignUp = () => 
@@ -8,7 +9,17 @@ export const showSignUp = () =>
     app.innerHTML = 
     `
          <div class="card">
-              <h1 class="self-center text-3xl font-medium mb-4">SignUp</h1>
+ 
+              <div class="grid grid-cols-3 items-center">
+                <ion-icon id="back-btn" name="chevron-back-outline" 
+                class="text-2xl cursor-pointer p-2 self-start 
+                rounded-full active:bg-gray-200 hover:bg-gray-100"></ion-icon>
+
+                <h1 class="self-center text-3xl font-medium">SignUp</h1>
+                
+              </div>
+              
+              
               <form action="submit" class="flex flex-col gap-4">
                   <input type="text" placeholder="Name" class="input">
                   <input type="text" placeholder="Last Name" class="input">
@@ -36,6 +47,7 @@ export const showSignUp = () =>
 
                   
               </form>
+
               
             </div>
     `
@@ -44,6 +56,8 @@ export const showSignUp = () =>
     const confirmPassSignUp = document.getElementById("confirmPassSignUp") as HTMLInputElement;
     const iconPass = document.getElementById("iconPassSignUp")!;
     const iconConfirmPass = document.getElementById("iconConfirmPassSignUp")!;
+    const backButton = document.getElementById("back-btn")!;
+
 
     //Password input
     inputPassSignUp.addEventListener('input', () =>{
@@ -62,6 +76,10 @@ export const showSignUp = () =>
 
     iconConfirmPass.addEventListener('click', () => {
         togglePasswordVisibility(confirmPassSignUp, iconConfirmPass);
+    })
+
+    backButton.addEventListener('click', () =>{
+        navigateTo("/login");
     })
     
     
