@@ -27,5 +27,7 @@ export const expenseSchema = z.object({
     z.string().min(1, "Invalid user id")
   ).min(1, "At least one participant is required"),
 
+  createdBy: z.string().min(1, "Created by is required"),
+
   createdAt: z.string().optional(),
 });
