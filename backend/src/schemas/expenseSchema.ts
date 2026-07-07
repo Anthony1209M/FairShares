@@ -1,10 +1,11 @@
 import {z} from 'zod';
 
 export const expenseSchema = z.object({
-    total: z.number().positive("Total must be greater than 0"),
+    total: z.number({ 
+      error: "Total must be a valid number"}).positive("Total must be greater than 0"),
     splits: z.array(z.object({
-        user: z.string().min(1, "User is required"),
-        amount: z.number().min(1, "Amount cannot be less than 1")
+        userId: z.string().min(1, "User is required"),
+        amount: z.number().min(0, "Amount must be greater than or equal to 0")
     })),
     category: z
     .enum([
@@ -17,7 +18,10 @@ export const expenseSchema = z.object({
       "health",
       "education",
       "other",
-    ])
+    ],
+    {
+    message: "You must select a valid category",
+   })
     .optional()
     .default("other"),
 
@@ -25,9 +29,5 @@ export const expenseSchema = z.object({
 
   participants: z.array(
     z.string().min(1, "Invalid user id")
-  ).min(1, "At least one participant is required"),
-
-  createdBy: z.string().min(1, "Created by is required"),
-
-  createdAt: z.string().optional(),
+  ).min(1, "At least one participant is required")
 });

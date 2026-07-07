@@ -1,5 +1,7 @@
 import express, { Request, Response } from "express";
 import authRoutes from "./routes/auth.routes";
+import expenseRoutes from "./routes/expense.routes";
+import friendshipRoutes from "./routes/friendShip.routes";
 import {errorMiddleware} from "./middleware/errorMiddleware";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -19,7 +21,8 @@ app.use(cookieParser());
 
 
 app.use('/api', authRoutes);
-
+app.use('/api', expenseRoutes);
+app.use('/api', friendshipRoutes);
 
 
 app.use(errorMiddleware);

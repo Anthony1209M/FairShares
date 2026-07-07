@@ -8,6 +8,7 @@ export async function auth(req: Request,res: Response, next: NextFunction)
 {
    const token = req.cookies.token;
    
+   
 
    if(!token) return next(new HttpError(401, "Unauthorized"));
 

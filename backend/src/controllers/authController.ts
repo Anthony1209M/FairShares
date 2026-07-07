@@ -6,6 +6,7 @@ import {asyncHandler} from "../utils/asyncHandler"
 import { HttpError } from "../errors/HttpErrors";
 import {signInSchema} from "../schemas/authSchema";
 import  jwt, {JwtPayload}  from "jsonwebtoken";
+import { activateUser } from "../services/user.service";
 
 
 export const createSignupUser = asyncHandler(async(req:Request, res:Response, next: NextFunction) =>
@@ -48,40 +49,8 @@ export const createSignupUser = asyncHandler(async(req:Request, res:Response, ne
     
 });
 
-const createInvitedUser = asyncHandler(async(req:Request, res:Response, next: NextFunction) =>
-{
-    
-        const {email} = req.body;
-
-        const user = await User.findOne({email});
-
-        if(!user)
-        {
-            await User.create({         
-            email: req.body.email,
-            name: req.body.name })
-
-            return res.status(200).json({Message: "User was created"})
-
-        }
-
-    
-    
-    
-    
-});
-
-const activateUser = async(user: any, password: string) =>
-{
 
 
-    user.password = password;
-    user.isRegistered = true;
-           
-    await user.save();
-
-    
-};
 
 export const signIn = asyncHandler(async(req:Request, res:Response, next: NextFunction) =>
 {
@@ -101,9 +70,9 @@ export const signIn = asyncHandler(async(req:Request, res:Response, next: NextFu
     res.cookie("token", token, {httpOnly:true });
 
     res.status(200).json(
-        {
-            user: userJson
-        }
+        
+            userJson
+        
     ) 
 });
 
@@ -131,11 +100,10 @@ export const getMe = asyncHandler(async(req:Request, res:Response, next: NextFun
         
         return res.status(404).json({ message: "User not found" });
     }
-    const userJson = user.toObject();
 
-    res.status(200).json({
-        userJson
-    });
+    res.status(200).json(
+        user
+    );
 
         
 

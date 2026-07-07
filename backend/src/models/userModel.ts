@@ -47,7 +47,20 @@ const userSchema = new Schema({
 
   
 
-})
+});
+
+userSchema.virtual("id").get(function () {
+  return this._id.toString();
+});
+
+userSchema.set("toJSON", {
+  virtuals: true,
+
+  transform: (_, ret: any) => {
+    delete ret._id;
+    delete ret.__v;
+  },
+});
 
 const User = mongoose.model('User', userSchema);
 

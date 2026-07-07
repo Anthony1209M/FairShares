@@ -6,7 +6,8 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { HttpError } from "../errors/HttpErrors";
 
 
-const createExpense= asyncHandler(async(req:Request, res:Response, next) =>
+
+export const createExpense= asyncHandler(async(req:Request, res:Response, next: NextFunction) =>
 {
    
         const result = expenseSchema.safeParse(req.body);
@@ -16,19 +17,39 @@ const createExpense= asyncHandler(async(req:Request, res:Response, next) =>
 
         if(!result.success)
         {
-            return res.status(400).json({
-            message: "Validation error",
-            errors: result.error.format()
-            });
+            console.log(result.error);
+            return next(new HttpError(400, result.error.issues[0].message));
+           
         }
 
-        const {splits, total} = result.data;
+        
+
+
+        const {splits, total, category, description, participants} = result.data;
+
+        const createdBy = req.user?.userId as string;
+
+
+        if(!participants.includes(createdBy))
+        {
+            next(new HttpError(400, "Creator must be a participant"));
+        }
 
         const sum = splits.reduce((acc, s) => acc + s.amount, 0);
 
         if(sum !== total)
         {
-            throw new HttpError(400, "Splits must equal total")
+             return next(new HttpError(400, "Splits must equal total"));
         }
 
+        const expense = await expenseModel.create({
+            total,
+            splits,
+            category,
+            description,
+            participants,
+            createdBy
+        })
+
+        return res.status(201).json({Message: "Expense created successfully", expense});
 });
