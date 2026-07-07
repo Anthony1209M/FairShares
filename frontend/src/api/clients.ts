@@ -1,3 +1,4 @@
+import { setCurrentUser } from "../store/user";
 
 const BASEURL = "http://localhost:3000/api";
 
@@ -14,10 +15,10 @@ export async function apiFetch<T>(path:string, options?: RequestInit ): Promise<
     {
         const data = await res.json();
         throw new Error(data.message);
+
     }
     
-
-
     return await res.json();
+    
 
 }

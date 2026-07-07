@@ -1,4 +1,5 @@
 import { apiFetch } from "./clients";
+import type { User } from "../types/user";
 
 export interface loginDTO
 {
@@ -6,15 +7,10 @@ export interface loginDTO
     password: string
 }
 
-interface AuthResponse 
-{
-  user: { id: string; name: string; email: string };
-}
 
-
-export function login(loginDTO: loginDTO) : Promise<AuthResponse>
+export function login(loginDTO: loginDTO) : Promise<User>
 {
-    return apiFetch<AuthResponse>("/login", 
+    return apiFetch<User>("/login", 
         {
             method: "POST",
             body: JSON.stringify(loginDTO),
@@ -23,11 +19,11 @@ export function login(loginDTO: loginDTO) : Promise<AuthResponse>
     )
 }
 
-export async function getCurrentUser() : Promise<AuthResponse | null >
+export async function getCurrentUser() : Promise<User | null >
 {
     try
     {
-        const user = await apiFetch<AuthResponse>("/getme");
+        const user = await apiFetch<User>("/getme");
         
         return user;
 

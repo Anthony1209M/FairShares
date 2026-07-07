@@ -11,3 +11,19 @@ export function setShake()
     
    
 }
+
+export function errorMessage(message: string)
+{
+    const errorEl = document.getElementById("error-message");
+    if(errorEl)
+    {
+        errorEl.textContent = message;
+        errorEl.classList.remove("hidden");
+
+        setTimeout(() => {
+         errorEl.classList.add("hidden");
+    
+         }, 3000);
+    }
+}
+

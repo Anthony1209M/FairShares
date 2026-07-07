@@ -3,6 +3,7 @@ import { app } from "./pages/app";
 import { showDashboard } from "./pages/dashboard";
 import {getCurrentUser} from "./api/auth"; 
 import { showSignUp } from "./pages/signUp";
+import { state } from "./store/user";
 
 export async function navigateTo(path: string)
 {
@@ -13,7 +14,8 @@ export async function navigateTo(path: string)
 
 export async function renderPage(path: string)
 {
-    const user = await getCurrentUser();
+    const user = state.currentUser;
+  
 
     if ((path === "/login" || path === "/") && user) {
         history.replaceState({}, "", "/dashboard");

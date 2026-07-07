@@ -4,6 +4,7 @@ import {login, type loginDTO} from "../api/auth";
 import { navigateTo } from "../router";
 import { setShake } from "../utils/errorMessages";
 import {togglePasswordVisibility, toggleIconVisibility} from "../utils/password";
+import {setCurrentUser} from "../store/user";
 
 export const showLogin = () =>
 {
@@ -65,7 +66,9 @@ async function signIn(e:Event)
     
     try
     {
-        await login(user);
+        const currentUser = await login(user);
+        setCurrentUser(currentUser);
+
         navigateTo("/dashboard");
 
     }
