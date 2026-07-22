@@ -1,14 +1,26 @@
-import { createExpense } from "../api/expense";
-import { createFriendship } from "../api/friendShip";
-import { state } from "../store/user";
+import { createExpense, getSummaryObject } from "../api/expense";
+import { createFriendship, getFriends } from "../api/friendShip";
+import { userState } from "../store/user";
 import type { CreateExpenseDTO } from "../types/expense";
+import type { Friendship } from "../types/friendShip";
 import type { User } from "../types/user";
 import { errorMessage } from "../utils/errorMessages";
 import {app} from "./app";
 
 
-export const showDashboard = () =>
+
+function summaryItem(label: string, amount: number): string{
+  return `
+    <div class="summary-item">
+      <p>${label}</p>
+      <span class="text-3xl font-medium">$${amount.toFixed(2)}</span>
+    </div>
+  `;
+}
+
+export const showDashboard = async () =>
 {
+
     app.classList.remove(...app.classList);
     app.innerHTML =
     `   
@@ -24,10 +36,8 @@ export const showDashboard = () =>
                 <div class="flex-1 bg-white rounded-lg py-7 px-5">
                   <h2 class="text-2xl font-medium mb-5">Friends</h2>
 
-                  <ul>
-                     <li>Ana</li>
-                     <li>Juan</li>
-                     <li>Carlos</li>
+                  <ul id="friends-container">
+                     
                   </ul>
 
 
@@ -39,11 +49,15 @@ export const showDashboard = () =>
                       </div>
 
                       <div class="flex gap-3">
-                        <button type="button" class="expense-open px-4 py-3 bg-red-300 
+                        <button type="button" class="expense-open px-4 py-3 bg-green-400 
                         rounded-4xl cursor-pointer ">Add Expense</button>
-                        <button type="button" class="px-4 py-3 bg-amber-300 rounded-4xl cursor-pointer">Add Expense</button>
+                        <button type="button" class="px-4 py-3 bg-gray-300 rounded-4xl cursor-pointer">Pay Expense</button>
                       </div>
 
+                  </div>
+
+                  <div id="summary-container" class="grid grid-cols-3 gap-5 mt-12">   
+                    
                   </div>
 
                 </div>
@@ -117,7 +131,7 @@ export const showDashboard = () =>
                          
                         <h2 class="font-medium text-xl mb-4">Select friends</h2>
 
-                        <div id="friends-container" class="overscroll-y-contain max-h-40 overflow-auto">
+                        <div id="friends-list-container" class="overscroll-y-contain max-h-40 overflow-auto">
                            
                                 
                             
@@ -198,41 +212,29 @@ const addFriendsSpan = document.querySelector("[data-id='1']")!;
 
 const paidByBtn = document.getElementById("paid-by-btn");
 
+const listFriendsContainer = document.getElementById("friends-list-container")!;
+
 const friendsContainer = document.getElementById("friends-container")!;
 
 const addExpenseBtn = document.querySelector("[data-action='add-expense-btn']")!;
 
-const friends = [
-  { id: "id-1", name: "Marcos Perez",
-  lastName: "Gomez",
-  email: "Marcos01@gmail.com",
-  isRegistered: false},
-  {
-  id: "id-2",
-  name: "Ana Lopez",
-  lastName: "Martinez",
-  email: "ana.lopez@example.com",
-  isRegistered: true
-},
-{
-  id: "id-3",
-  name: "Carlos Rivera",
-  lastName: "Diaz",
-  email: "carlos.rivera@example.com",
-  isRegistered: false
-}
-  
-];
 
-let selectedFriends: User[] = [state.currentUser!];
+const state = {
+    friendShips:[] as Friendship[],
+    expenses: [] as CreateExpenseDTO[],
+    selectedFriends: [userState.currentUser!] as User[],
+};
+
+
+
 
 function renderFriends()
 {
-    friendsContainer.innerHTML = friends.map(friend =>
+    listFriendsContainer.innerHTML = state.friendShips.map(friendship =>
     `
       <label class="flex items-center gap-2">
-            <input type="checkbox" name="friends" value="${friend.id}">
-            <span class="friend-name">${friend.name}</span>
+            <input type="checkbox" name="friends" value="${friendship.friend.id}">
+            <span class="friend-name">${friendship.friend.name}</span>
       </label>
     
     `
@@ -246,7 +248,7 @@ function renderSelectedFriends()
     const payersContainer = document.getElementById("payers-container")!;
 
 
-    payersContainer.innerHTML = selectedFriends.map(friend => 
+    payersContainer.innerHTML = state.selectedFriends.map(friend => 
 
     `
         <label class="flex items-center gap-2">
@@ -291,6 +293,19 @@ const closeModal = () =>
 
 };
 
+const renderFriendsList = async () =>
+{
+    state.friendShips = await getFriends();
+
+    console.log(state.friendShips);
+
+    friendsContainer.innerHTML = state.friendShips.map(friendship =>
+        `<li class="cursor-pointer hover:bg-gray-200 p-2">${friendship.friend.name}</li>`
+    ).join("");
+  
+
+};
+
 
 
 
@@ -323,11 +338,35 @@ const toggleModalVisibility = (modalEl: HTMLElement) =>
 
 };
 
+const renderExpenseSummary = async() =>
+{
+    const summary = await getSummaryObject();
+    const container = document.getElementById("summary-container") as HTMLDivElement;
+
+    container.innerHTML =
+    `
+    ${summaryItem("Total Expenses", summary.totalExpenses)}
+    ${summaryItem("You owe", summary.youOwe)}
+    ${summaryItem("You are owed", summary.youAreOwed)}
+    `;
+}
+
+
+const InitDashboard = async () =>
+{
+    await renderFriendsList();
+    await renderExpenseSummary();
+
+}
+
+await InitDashboard();
 
 document.addEventListener("click", toggleExpenseModal);
 
 addFriendsBtn?.addEventListener("click", () => {
-renderFriends()
+
+renderFriends();
+
 toggleModalVisibility(modalAddFriends);
 if(!modalPaidBy.classList.contains("hidden"))
     {
@@ -358,18 +397,18 @@ paidByBtn?.addEventListener("click", () =>
 confirmBtn.addEventListener("click", () =>
 {
     
-    selectedFriends = [state.currentUser!];
+    state.selectedFriends = [userState.currentUser!];
     
 
     const checkedFriends = document.querySelectorAll('input[name="friends"]:checked');
 
     const friendsIds = Array.from(checkedFriends).map(el => (el as HTMLInputElement).value);  
 
-    friends.forEach(friend => 
+    state.friendShips.forEach(friendship => 
     {
-        if(friendsIds.includes(friend.id))
+        if(friendsIds.includes(friendship.friend.id))
         {
-            selectedFriends.push(friend);
+            state.selectedFriends.push(friendship.friend);
         }
     
     });
@@ -418,7 +457,7 @@ addExpenseBtn?.addEventListener("click", async () =>
 
 function getExpenseData():CreateExpenseDTO 
 {
-    const participants = selectedFriends.map(friend => friend.id);
+    const participants = state.selectedFriends.map(friend => friend.id);
     const descriptionInput = document.querySelector<HTMLInputElement>('input[placeholder="Description"]')!;
     const totalInput = document.querySelector<HTMLInputElement>('input[placeholder="Total"]')!;
     const categorySelect = document.querySelector<HTMLSelectElement>('select[name="option"]')!;
@@ -434,7 +473,7 @@ function getExpenseData():CreateExpenseDTO
         splits: Array.from(splitsInputs).map(input => 
         {
             return {
-                userId: input.dataset.userId as string,
+                user: input.dataset.userId as string,
                 amount: parseFloat(input.value)
             };
         }),
