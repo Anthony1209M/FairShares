@@ -3,7 +3,7 @@ import { app } from "./pages/app";
 import { showDashboard } from "./pages/dashboard";
 import {getCurrentUser} from "./api/auth"; 
 import { showSignUp } from "./pages/signUp";
-import { state } from "./store/user";
+import { userState } from "./store/user";
 
 export async function navigateTo(path: string)
 {
@@ -14,16 +14,16 @@ export async function navigateTo(path: string)
 
 export async function renderPage(path: string)
 {
-    const user = state.currentUser;
+    const user = userState.currentUser;
   
 
     if ((path === "/login" || path === "/") && user) {
         history.replaceState({}, "", "/dashboard");
-        return showDashboard(); // already logged in
+        return await showDashboard(); // already logged in
     }
 
     if (path === "/dashboard" && !user) {
-        history.replaceState({}, "", "/login");
+        history.replaceState({}, "", "/login"); 
         return showLogin(); // not logged in
     }
 

@@ -1,4 +1,4 @@
-import type{ CreateExpenseDTO } from "../types/expense";
+import type{ CreateExpenseDTO, SummaryExpense } from "../types/expense";
 import { apiFetch } from "./clients";
 
 export const createExpense = (expense: CreateExpenseDTO) : Promise<void> =>
@@ -8,3 +8,8 @@ export const createExpense = (expense: CreateExpenseDTO) : Promise<void> =>
         body: JSON.stringify(expense)
     });
 };
+
+export const getSummaryObject = (): Promise<SummaryExpense> =>
+{
+    return apiFetch<SummaryExpense>("/expenses/summary");
+}
